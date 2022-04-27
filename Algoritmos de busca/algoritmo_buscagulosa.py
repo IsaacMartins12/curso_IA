@@ -18,13 +18,11 @@ class Gulosa :
               if adjacente.vertice.visitado == False :
                   adjacente.vertice.visitado == True
                   vetor_ordenado.insere(adjacente.vertice)
-              vetor_ordenado.imprime()
+            vetor_ordenado.imprime()
             if vetor_ordenado.valores[0] != None :
                 self.buscar(vetor_ordenado.valores[0])
              
                
-
-
 class Vertice :
     def __init__(self,rotulo,distancia_objetivo) :
         self.rotulo = rotulo
