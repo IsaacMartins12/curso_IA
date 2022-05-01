@@ -22,7 +22,6 @@ class Gulosa :
             if vetor_ordenado.valores[0] != None :
                 self.buscar(vetor_ordenado.valores[0])
              
-               
 class Vertice :
     def __init__(self,rotulo,distancia_objetivo) :
         self.rotulo = rotulo
