@@ -1,9 +1,15 @@
+#include <Ultrasonic.h>
+#include <MD_YX5300.h>
 #include <SoftwareSerial.h>
 
+#define pino_trigger 2
+#define pino_echo 3
 #define ARDUINO_RX 5  //should connect to TX of the Serial MP3 Player module
 #define ARDUINO_TX 6  //connect to RX of the module
 
-SoftwareSerial mp3(ARDUINO_RX, ARDUINO_TX);
+SoftwareSerial mp3(ARDUINO_RX, ARDUINO_TX); // Inicia serial do modulo YX
+
+Ultrasonic ultrasonic(pino_trigger, pino_echo); // Instancia um objeto da classe Ultrasonic
 
 static int8_t Send_buf[8] = {0}; //Buffer para enviar comandos para o modulo MP3
 static uint8_t ansbuf[10] = {0}; //Buffer para receber a resposta do modulo MP3
@@ -12,7 +18,6 @@ String mp3Answer;           //String para resposta do modulo MP3
 
 String sanswer(void); //Prototipo de funcao
 String sbyte2hex(uint8_t b); //Prototipo de funcao
-
 
 /************ Command byte **************************/
 #define CMD_NEXT_SONG     0X01  // Play next song.
@@ -51,28 +56,27 @@ String sbyte2hex(uint8_t b); //Prototipo de funcao
 /************ Opitons **************************/
 #define DEV_TF            0X02
 
-
 /*********************************************************************/
 
-bool ava_estado = 0, ret_estado = 0;
 char c = ' ';
+
+float cmMsec, inMsec;
 
 void setup()
 {
+  pinMode(pino_trigger, OUTPUT);
+  pinMode(pino_echo,INPUT);
+  pinMode(4,OUTPUT); // Led indicador
   Serial.begin(9600);
   mp3.begin(9600);
-  delay(500);
-  pinMode(2, INPUT);
-  pinMode(3, INPUT);
   sendCommand(CMD_SEL_DEV, 0, DEV_TF);
   delay(500);
 }
-
+ 
 void loop()
-{
-  
-  //Se existir um caractere na serial, chama a função sendMP3Command para enviar um comando para o modulo MP3
-  if ( Serial.available() )
+{  
+   //Se existir um caractere na serial, chama a função sendMP3Command para enviar um comando para o modulo MP3
+  if (Serial.available())
   {
     c = Serial.read();
     sendMP3Command(c);
@@ -83,8 +87,22 @@ void loop()
   {
     Serial.println(decodeMP3Answer());
   }
+  
   delay(100);
-  //Serial.println("Tocando musica...");
+  
+   long microsec = ultrasonic.timing();
+   cmMsec = ultrasonic.convert(microsec, Ultrasonic::CM);
+   //inMsec = ultrasonic.convert(microsec, Ultrasonic::IN);
+  
+   if(cmMsec < 40){
+      digitalWrite(4,1);
+      delay(500);
+      digitalWrite(4,0);
+      Serial.println("Tocando ! ...");
+      sendCommand(CMD_PLAY);
+      break;
+   }
+  
 }
 
 
@@ -170,7 +188,6 @@ void sendMP3Command(char c) {
       break;
   }
 }
-
 
 
 //Funcao para decodificar a resposta do modulo MP3
