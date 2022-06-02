@@ -1,5 +1,5 @@
-#include <Ultrasonic.h>
-#include <MD_YX5300.h>
+#include <Ultrasonic.h>  //Biblioteca responsável pelo funcionamento do sensor ultrassonico
+#include <MD_YX5300.h> // Biblioteca responsável pelo módulo mp3
 #include <SoftwareSerial.h>
 
 #define pino_trigger 2
@@ -60,8 +60,6 @@ String sbyte2hex(uint8_t b); //Prototipo de funcao
 
 char c = ' ';
 
-float cmMsec, inMsec;
-
 void setup()
 {
   pinMode(pino_trigger, OUTPUT);
@@ -75,13 +73,9 @@ void setup()
  
 void loop()
 {  
-   //Se existir um caractere na serial, chama a função sendMP3Command para enviar um comando para o modulo MP3
-  if (Serial.available())
-  {
-    c = Serial.read();
-    sendMP3Command(c);
-  }
-
+  long microsec = ultrasonic.timing();
+  float cmMsec, inMsec;
+ 
   // Check for the answer.
   if (mp3.available())
   {
@@ -89,20 +83,19 @@ void loop()
   }
   
   delay(100);
-  
-   long microsec = ultrasonic.timing();
-   cmMsec = ultrasonic.convert(microsec, Ultrasonic::CM);
-   //inMsec = ultrasonic.convert(microsec, Ultrasonic::IN);
+
+  cmMsec = ultrasonic.convert(microsec, Ultrasonic::CM);
   
    if(cmMsec < 40){
-      digitalWrite(4,1);
-      delay(500);
-      digitalWrite(4,0);
+      Serial.println(cmMsec);
       Serial.println("Tocando ! ...");
       sendCommand(CMD_PLAY);
-      break;
    }
-  
+   else{
+     sendCommand(CMD_STOP_PLAY);
+     Serial.println(cmMsec);
+   }
+  delay(300);
 }
 
 
