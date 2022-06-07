@@ -1,8 +1,8 @@
- int numeros[4];
+  int numeros[4];
   int teste[4] = {0,0,0,0};
   int pressionado1 = 0,pressionado2 = 0, pressionado3 = 0, pressionado4 = 0 ;
   int cont0 = 0,cont1 = 0, cont2 = 0, cont3 = 0, acerto=0, clicks=0 , i=-1;
-  int time = 1500;
+  int time = 1000;
 
 void setup()
 {
@@ -247,6 +247,7 @@ void mostrafase4(){
 
 int lerbotoes(){
   if (digitalRead(2)==1){
+    Serial.println("Li o botao do pino 2");
     i++;
     teste[i] = 2 ;
     pressionado1=1;
@@ -256,6 +257,7 @@ int lerbotoes(){
   }
   
   if (digitalRead(3)==1){
+    Serial.println("Li o botao do pino 3");
     i++;
     teste[i] = 3 ;
     pressionado2=1;
@@ -265,6 +267,7 @@ int lerbotoes(){
   }
   
   if (digitalRead(4)==1){
+    Serial.println("Li o botao do pino 4");
     i++;
     teste[i] = 4 ;
     pressionado3=1;
@@ -273,6 +276,7 @@ int lerbotoes(){
     pressionado3=0;
   }
     if (digitalRead(5)==1){
+     Serial.println("Li o botao do pino 5");
      i++;
      teste[i] = 5 ;
      pressionado4=1;
